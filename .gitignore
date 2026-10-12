@@ -1,0 +1,16 @@
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+.kotlin/
+
+# Python
+modelo/.venv/
+__pycache__/
+
+# Los pesos originales no van al repositorio; el .onnx incluido en la app sí (app/src/main/assets/modelo/)
+modelo/pesos/
+
+# APK compilados
+entrega/
