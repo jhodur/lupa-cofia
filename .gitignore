@@ -14,3 +14,6 @@ modelo/pesos/
 
 # APK compilados
 entrega/
+
+# Material de la postulación (documentos, bitácora y datos del equipo): no va al repositorio
+postulacion-neiva/
