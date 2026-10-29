@@ -18,6 +18,11 @@ class Modelos(private val ctx: Context) {
         get() = prefs.getFloat("umbral", 0.25f)
         set(v) = prefs.edit().putFloat("umbral", v).apply()
 
+    /** Caficultor (por defecto): semáforo, sin porcentajes ni valoración. Extensionista: porcentajes y valoración. */
+    var extensionista: Boolean
+        get() = prefs.getBoolean("extensionista", false)
+        set(v) = prefs.edit().putBoolean("extensionista", v).apply()
+
     /** Carga perezosa: la primera llamada tarda (copia el modelo incluido y abre la sesión). */
     @Synchronized
     fun activo(): ModeloActivo {

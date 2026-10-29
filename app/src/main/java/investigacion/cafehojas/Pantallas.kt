@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.lightColorScheme
@@ -106,7 +107,7 @@ fun App() {
         pantalla = Pantalla.Analizando
         scope.launch {
             pantalla = try {
-                val analisis = withContext(Dispatchers.Default) { almacen.analizar(uri, modelos.activo(), modelos.umbral) }
+                val analisis = withContext(Dispatchers.Default) { almacen.analizar(uri, modelos.activo(), modelos.umbral, if (modelos.extensionista) "extensionista" else "caficultor") }
                 Pantalla.Resultado(analisis, Pantalla.Inicio)
             } catch (e: Throwable) {
                 error = "No se pudo revisar la foto. Intente otra vez."
@@ -129,6 +130,7 @@ fun App() {
             when (val p = pantalla) {
                 Pantalla.Inicio -> PantallaInicio(
                     error = error,
+                    extensionista = modelos.extensionista,
                     onCamara = {
                         try {
                             camara.launch(uriDe(ctx, captura))
@@ -155,7 +157,7 @@ fun App() {
                 }
                 is Pantalla.Resultado -> {
                     BackHandler { pantalla = p.volverA }
-                    PantallaResultado(p.analisis, almacen) { pantalla = p.volverA }
+                    PantallaResultado(p.analisis, almacen, modelos.extensionista) { pantalla = p.volverA }
                 }
                 Pantalla.Historial -> {
                     BackHandler { pantalla = Pantalla.Inicio }
@@ -206,7 +208,7 @@ private fun Aviso() {
 
 @Composable
 private fun PantallaInicio(
-    error: String?, onCamara: () -> Unit, onGaleria: () -> Unit, onHistorial: () -> Unit, onAjustes: () -> Unit,
+    error: String?, extensionista: Boolean, onCamara: () -> Unit, onGaleria: () -> Unit, onHistorial: () -> Unit, onAjustes: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
@@ -216,6 +218,7 @@ private fun PantallaInicio(
             Column(Modifier.weight(1f)) {
                 Text(Textos.TITULO, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Negro)
                 Text(Textos.SUBTITULO, fontSize = 18.sp, color = Negro)
+                if (extensionista) Text(Textos.MODO_EXTENSIONISTA, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Verde)
             }
             // discreto: quien usa la app en la finca no necesita entrar aquí
             TextButton(onAjustes) { Text("Ajustes", fontSize = 14.sp, color = Color(0xFF555555)) }
@@ -257,8 +260,9 @@ private fun FotoConCajas(a: Analisis, foto: Bitmap?) {
 }
 
 @Composable
-private fun Resumen(a: Analisis) {
-    val conteo = a.visibles().groupingBy { it.clase }.eachCount().toSortedMap()
+private fun Resumen(a: Analisis, extensionista: Boolean) {
+    val visibles = a.visibles()
+    val conteo = visibles.groupingBy { it.clase }.eachCount().toSortedMap()
     if (conteo.isEmpty()) {
         Text(Textos.SIN_MANCHAS, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Negro)
         Text(Textos.SIN_MANCHAS_ACLARACION, fontSize = 20.sp, color = Negro)
@@ -270,11 +274,36 @@ private fun Resumen(a: Analisis) {
             Spacer(Modifier.size(12.dp))
             Text(Textos.resumen(a.clases[clase] ?: "clase $clase", n), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Negro)
         }
+        val maxima = visibles.filter { it.clase == clase }.maxOf { it.confianza }
+        if (extensionista) {
+            Text("Confianza más alta: ${(maxima * 100).roundToInt()} %", fontSize = 18.sp, color = Negro,
+                modifier = Modifier.padding(start = 40.dp))
+        } else {
+            Semaforo(Textos.nivel(maxima))
+        }
+    }
+}
+
+// Tres luces con la encendida marcada, más la frase: el color solo no basta (daltonismo, sol fuerte).
+@Composable
+private fun Semaforo(nivel: Textos.Nivel) {
+    val luces = listOf(Textos.Nivel.ALTA to Color(0xFF2E7D32), Textos.Nivel.MEDIA to Color(0xFFF9A825), Textos.Nivel.BAJA to Color(0xFFC62828))
+    Row(Modifier.padding(start = 40.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.background(Color(0xFF212121), RoundedCornerShape(16.dp)).padding(horizontal = 8.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            for ((n, color) in luces) {
+                Box(Modifier.size(22.dp).background(if (n == nivel) color else Color(0xFF555555), RoundedCornerShape(11.dp)))
+            }
+        }
+        Spacer(Modifier.size(10.dp))
+        Text(nivel.texto, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Negro)
     }
 }
 
 @Composable
-private fun PantallaResultado(a: Analisis, almacen: Almacen, onListo: () -> Unit) {
+private fun PantallaResultado(a: Analisis, almacen: Almacen, extensionista: Boolean, onListo: () -> Unit) {
     var foto by remember(a.id) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(a.id) { foto = withContext(Dispatchers.IO) { almacen.fotoParaPantalla(a) } }
     var valoracion by remember(a.id) { mutableStateOf(a.valoracion) }
@@ -285,9 +314,11 @@ private fun PantallaResultado(a: Analisis, almacen: Almacen, onListo: () -> Unit
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         FotoConCajas(a, foto)
-        Resumen(a)
+        Resumen(a, extensionista)
         Aviso()
 
+        // La valoración es trabajo del extensionista: al caficultor no se le pide juzgar si la app acertó
+        if (extensionista) {
         Text(Textos.PREGUNTA, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Negro)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             for ((valor, texto, color) in listOf(Triple("correcto", Textos.SI, Verde), Triple("incorrecto", Textos.NO, Rojo))) {
@@ -310,6 +341,7 @@ private fun PantallaResultado(a: Analisis, almacen: Almacen, onListo: () -> Unit
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp, color = Negro),
             modifier = Modifier.fillMaxWidth(),
         )
+        }
         BotonGrande(Textos.LISTO, onClick = onListo)
         Text(
             "Tardó ${"%.1f".format(a.msPrediccion / 1000.0)} s · ${a.modeloArchivo} (${a.modeloSha}) · ${a.fecha.take(16).replace("T", " ")}",
@@ -426,6 +458,19 @@ private fun PantallaAjustes(modelos: Modelos, onVolver: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Volver("Ajustes", onVolver)
+
+        var extensionista by remember { mutableStateOf(modelos.extensionista) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(Textos.MODO_EXTENSIONISTA, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Negro)
+                Text(
+                    "Muestra la confianza en porcentaje y permite marcar si el resultado es correcto. " +
+                        "Apagado, el caficultor ve el semáforo.",
+                    fontSize = 16.sp, color = Negro,
+                )
+            }
+            Switch(checked = extensionista, onCheckedChange = { extensionista = it; modelos.extensionista = it })
+        }
 
         Text("Umbral de confianza: ${(umbral * 100).roundToInt()} %", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Negro)
         Slider(

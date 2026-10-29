@@ -35,6 +35,7 @@ class Analisis(
     val clases: Map<Int, String>,
     /** Todas las detecciones desde PISO_CONFIANZA. Lo que vio el usuario son las que superan [umbral]. */
     val detecciones: List<Deteccion>,
+    val modo: String = "caficultor",
     var valoracion: String? = null,
     var nota: String = "",
 ) {
@@ -76,7 +77,7 @@ class Almacen(private val ctx: Context) {
     }
 
     /** Corre el modelo sobre la foto y deja guardados la foto y el resultado. */
-    fun analizar(uri: Uri, modelo: ModeloActivo, umbral: Float): Analisis {
+    fun analizar(uri: Uri, modelo: ModeloActivo, umbral: Float, modo: String): Analisis {
         val foto = leerFoto(uri)
         val pixeles = IntArray(foto.width * foto.height)
         foto.getPixels(pixeles, 0, foto.width, 0, 0, foto.width, foto.height)
@@ -88,6 +89,7 @@ class Almacen(private val ctx: Context) {
             fecha = ahora.truncatedTo(ChronoUnit.SECONDS).toString(),
             modeloArchivo = modelo.nombreVisible(),
             modeloSha = modelo.sha,
+            modo = modo,
             modeloLado = modelo.detector.lado,
             umbral = umbral,
             msPrediccion = prediccion.msTotal,
@@ -132,6 +134,7 @@ class Almacen(private val ctx: Context) {
             })
             .put("valoracion", a.valoracion ?: JSONObject.NULL)
             .put("nota", a.nota)
+            .put("modo", a.modo)
         File(File(carpeta, a.id), "analisis.json").writeText(json.toString(1))
     }
 
@@ -165,6 +168,7 @@ class Almacen(private val ctx: Context) {
             },
             valoracion = if (j.isNull("valoracion")) null else j.getString("valoracion"),
             nota = j.optString("nota"),
+            modo = j.optString("modo", "caficultor"),
         )
     }
 

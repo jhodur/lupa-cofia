@@ -38,6 +38,27 @@ object Textos {
         "cercospora" to "cercospora",
     )
 
+    const val MODO_EXTENSIONISTA = "Modo extensionista"
+
+    /**
+     * Semáforo de confiabilidad para el caficultor, según la confianza más alta de esa enfermedad en la foto.
+     * Cortes iniciales: se calibran cuando haya fotos de campo etiquetadas por un experto.
+     */
+    enum class Nivel(val texto: String) {
+        ALTA("Confianza alta"),
+        MEDIA("Confianza media: revíselo con su técnico"),
+        BAJA("Confianza baja: puede ser un error"),
+    }
+
+    const val CORTE_ALTA = 0.60f
+    const val CORTE_MEDIA = 0.40f
+
+    fun nivel(confianza: Float) = when {
+        confianza >= CORTE_ALTA -> Nivel.ALTA
+        confianza >= CORTE_MEDIA -> Nivel.MEDIA
+        else -> Nivel.BAJA
+    }
+
     /** Nombre para mostrar. Si el modelo trae una clase que no conocemos, se muestra tal cual. */
     fun clase(nombreModelo: String) = enEspanol[nombreModelo.lowercase()] ?: nombreModelo
 
