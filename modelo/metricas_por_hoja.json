@@ -1,0 +1,188 @@
+{
+ "0.25": {
+  "roya": {
+   "con": 90,
+   "sin": 90,
+   "vp": 87,
+   "fn": 3,
+   "fp": 2,
+   "vn": 88,
+   "sensibilidad": 0.9666666666666667,
+   "especificidad": 0.9777777777777777,
+   "precision": 0.9775280898876404,
+   "exactitud": 0.9722222222222222
+  },
+  "minador": {
+   "con": 36,
+   "sin": 144,
+   "vp": 33,
+   "fn": 3,
+   "fp": 1,
+   "vn": 143,
+   "sensibilidad": 0.9166666666666666,
+   "especificidad": 0.9930555555555556,
+   "precision": 0.9705882352941176,
+   "exactitud": 0.9777777777777777
+  },
+  "phoma": {
+   "con": 56,
+   "sin": 124,
+   "vp": 44,
+   "fn": 12,
+   "fp": 12,
+   "vn": 112,
+   "sensibilidad": 0.7857142857142857,
+   "especificidad": 0.9032258064516129,
+   "precision": 0.7857142857142857,
+   "exactitud": 0.8666666666666667
+  },
+  "cercospora": {
+   "con": 18,
+   "sin": 162,
+   "vp": 14,
+   "fn": 4,
+   "fp": 8,
+   "vn": 154,
+   "sensibilidad": 0.7777777777777778,
+   "especificidad": 0.9506172839506173,
+   "precision": 0.6363636363636364,
+   "exactitud": 0.9333333333333333
+  },
+  "cualquier enfermedad": {
+   "con": 153,
+   "sin": 27,
+   "vp": 151,
+   "fn": 2,
+   "fp": 0,
+   "vn": 27,
+   "sensibilidad": 0.9869281045751634,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.9888888888888889
+  }
+ },
+ "0.4": {
+  "roya": {
+   "con": 90,
+   "sin": 90,
+   "vp": 74,
+   "fn": 16,
+   "fp": 0,
+   "vn": 90,
+   "sensibilidad": 0.8222222222222222,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.9111111111111111
+  },
+  "minador": {
+   "con": 36,
+   "sin": 144,
+   "vp": 32,
+   "fn": 4,
+   "fp": 1,
+   "vn": 143,
+   "sensibilidad": 0.8888888888888888,
+   "especificidad": 0.9930555555555556,
+   "precision": 0.9696969696969697,
+   "exactitud": 0.9722222222222222
+  },
+  "phoma": {
+   "con": 56,
+   "sin": 124,
+   "vp": 39,
+   "fn": 17,
+   "fp": 6,
+   "vn": 118,
+   "sensibilidad": 0.6964285714285714,
+   "especificidad": 0.9516129032258065,
+   "precision": 0.8666666666666667,
+   "exactitud": 0.8722222222222222
+  },
+  "cercospora": {
+   "con": 18,
+   "sin": 162,
+   "vp": 8,
+   "fn": 10,
+   "fp": 3,
+   "vn": 159,
+   "sensibilidad": 0.4444444444444444,
+   "especificidad": 0.9814814814814815,
+   "precision": 0.7272727272727273,
+   "exactitud": 0.9277777777777778
+  },
+  "cualquier enfermedad": {
+   "con": 153,
+   "sin": 27,
+   "vp": 140,
+   "fn": 13,
+   "fp": 0,
+   "vn": 27,
+   "sensibilidad": 0.9150326797385621,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.9277777777777778
+  }
+ },
+ "0.6": {
+  "roya": {
+   "con": 90,
+   "sin": 90,
+   "vp": 17,
+   "fn": 73,
+   "fp": 0,
+   "vn": 90,
+   "sensibilidad": 0.18888888888888888,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.5944444444444444
+  },
+  "minador": {
+   "con": 36,
+   "sin": 144,
+   "vp": 32,
+   "fn": 4,
+   "fp": 0,
+   "vn": 144,
+   "sensibilidad": 0.8888888888888888,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.9777777777777777
+  },
+  "phoma": {
+   "con": 56,
+   "sin": 124,
+   "vp": 27,
+   "fn": 29,
+   "fp": 0,
+   "vn": 124,
+   "sensibilidad": 0.48214285714285715,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.8388888888888889
+  },
+  "cercospora": {
+   "con": 18,
+   "sin": 162,
+   "vp": 5,
+   "fn": 13,
+   "fp": 0,
+   "vn": 162,
+   "sensibilidad": 0.2777777777777778,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.9277777777777778
+  },
+  "cualquier enfermedad": {
+   "con": 153,
+   "sin": 27,
+   "vp": 77,
+   "fn": 76,
+   "fp": 0,
+   "vn": 27,
+   "sensibilidad": 0.5032679738562091,
+   "especificidad": 1.0,
+   "precision": 1.0,
+   "exactitud": 0.5777777777777777
+  }
+ }
+}

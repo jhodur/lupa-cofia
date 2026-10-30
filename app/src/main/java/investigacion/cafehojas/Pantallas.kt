@@ -272,14 +272,16 @@ private fun Resumen(a: Analisis, extensionista: Boolean) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(28.dp).background(colorDe(clase)).border(2.dp, Negro))
             Spacer(Modifier.size(12.dp))
-            Text(Textos.resumen(a.clases[clase] ?: "clase $clase", n), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Negro)
+            val nombre = a.clases[clase] ?: "clase $clase"
+            Text(if (extensionista) Textos.resumen(nombre, n) else Textos.resumenCaficultor(nombre),
+                fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Negro)
         }
         val maxima = visibles.filter { it.clase == clase }.maxOf { it.confianza }
         if (extensionista) {
             Text("Confianza más alta: ${(maxima * 100).roundToInt()} %", fontSize = 18.sp, color = Negro,
                 modifier = Modifier.padding(start = 40.dp))
         } else {
-            Semaforo(Textos.nivel(maxima))
+            Semaforo(Textos.nivel(a.clases[clase] ?: "", maxima))
         }
     }
 }

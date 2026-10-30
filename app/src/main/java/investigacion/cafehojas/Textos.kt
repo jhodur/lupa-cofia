@@ -42,7 +42,8 @@ object Textos {
 
     /**
      * Semáforo de confiabilidad para el caficultor, según la confianza más alta de esa enfermedad en la foto.
-     * Cortes iniciales: se calibran cuando haya fotos de campo etiquetadas por un experto.
+     * Cortes por enfermedad, medidos hoja por hoja en 180 fotos de laboratorio (modelo/metricas_por_hoja.py):
+     * desde el corte verde no hubo ningún error. Se recalibran con fotos de campo.
      */
     enum class Nivel(val texto: String) {
         ALTA("Confianza alta"),
@@ -50,17 +51,20 @@ object Textos {
         BAJA("Confianza baja: puede ser un error"),
     }
 
-    const val CORTE_ALTA = 0.60f
-    const val CORTE_MEDIA = 0.40f
-
-    fun nivel(confianza: Float) = when {
-        confianza >= CORTE_ALTA -> Nivel.ALTA
-        confianza >= CORTE_MEDIA -> Nivel.MEDIA
-        else -> Nivel.BAJA
+    fun nivel(nombreModelo: String, confianza: Float): Nivel {
+        val esRoya = nombreModelo.lowercase() == "rust"
+        return when {
+            confianza >= (if (esRoya) 0.40f else 0.60f) -> Nivel.ALTA
+            esRoya || confianza >= 0.40f -> Nivel.MEDIA
+            else -> Nivel.BAJA
+        }
     }
 
     /** Nombre para mostrar. Si el modelo trae una clase que no conocemos, se muestra tal cual. */
     fun clase(nombreModelo: String) = enEspanol[nombreModelo.lowercase()] ?: nombreModelo
+
+    /** Para el caficultor basta saber si la hoja parece tener la enfermedad, no cuántas manchas se detectaron. */
+    fun resumenCaficultor(nombreModelo: String) = "Posible ${clase(nombreModelo)}"
 
     fun resumen(nombreModelo: String, cantidad: Int) =
         "Posible ${clase(nombreModelo)}: $cantidad ${if (cantidad == 1) "mancha" else "manchas"}"
